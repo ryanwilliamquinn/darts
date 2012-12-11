@@ -12,12 +12,17 @@
 		<action name="home" >
 			<result>/index2.jsp</result>
 		</action>
+
+        <action name="insert" class="darts.MainController" method="sqlTest">
+            <result name="success">/user.jsp</result>
+        </action>
 		
 	</package>
 	<package name="users" namespace="/user" extends="struts-default">
 		<action name="/*" class="darts.MainController" method="execute">
 			<result name="success">/user.jsp</result>
 		</action>
+
 	</package>
 
 </struts>

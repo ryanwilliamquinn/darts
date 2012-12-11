@@ -15,6 +15,10 @@
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
       </fileset>
+      <fileset dir="/etc/apache-tomcat-7.0.33/lib">
+          <include name="**/*.jar"/>
+      </fileset>
+
     </path>
 
     <target name="init">
@@ -24,14 +28,21 @@
         <mkdir dir="${build}"/>
     </target>
 
+    <target name="deploy-web">
+        <copy file="${web.dir}/*.jsp" todir="${webapps}/darts" />
+    </target>
+
     <target name="compile" depends="init"
             description="compile the source " >
         <!-- Compile the java code from ${src} into ${build} -->
-        <javac srcdir="${src}" destdir="${build}">
+        <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
 			<classpath refid="base.path"/>
 			<src path="${src}"/>
 		</javac>
-		<copy file="${src}/struts.xml" tofile="${build}/struts.xml" />
+        <copy todir="${build}">
+            <fileset dir="${src}/main/resources"/>
+        </copy>
+        <copy file="${src}/main/java/darts/DartsMapper.xml" tofile="${build}/darts/DartsMapper.xml"></copy>
     </target>
 
     <target name="dist" depends="compile"
