@@ -19,6 +19,6 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="darts.DartsMapper"/>
+        <mapper resource="darts/DartsMapper.xml"/>
     </mappers>
 </configuration>

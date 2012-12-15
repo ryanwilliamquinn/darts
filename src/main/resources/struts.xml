@@ -24,5 +24,8 @@
 		</action>
 
 	</package>
+    <package name="data" namespace="/data" extends="struts-default">
+        <action name="twenties" class="darts.MainController" method="insert"/>
+    </package>
 
 </struts>

@@ -1,0 +1,9 @@
+body {margin:0px;}
+h3 {margin:0px;}
+.header {width:100%; background-color:#eee; border-bottom:2px solid #ccc; margin-bottom:5px;}
+.content {width:780px; margin:0 auto;}
+.scoreInput {width:40px; margin:10px;}
+#headerContent {width:780px; margin:0px auto;}
+#headerTitle {float:left;}
+.headerAccount {float:right; font-size:12px; line-height:20px;}
+
