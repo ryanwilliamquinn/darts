@@ -81,7 +81,7 @@
 		<delete dir="${webapps}/darts"/>
 	</target>
 
-    <target name="deploy-war" depends="build-war, clean-webapps">
+    <target name="deploy-war" depends="clean, build-war, clean-webapps">
 		<delete dir="${webapps}/ROOT"/>
         <delete file="${webapps}/ROOT.war"/>
         <copy file="${dist}/ROOT.war" tofile="${webapps}/ROOT.war"></copy>

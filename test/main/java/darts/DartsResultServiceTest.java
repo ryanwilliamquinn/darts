@@ -36,20 +36,8 @@ public class DartsResultServiceTest
     {
         DartsResult dartsResult = dartsResultService.getResultById(1);
         Assert.assertNotNull(dartsResult);
-        System.out.println(dartsResult);
     }
 
-    @Test
-    public void testGetAllUsers()
-    {
-        List<DartsResult> dartsResults = dartsResultService.getAllResults();
-        Assert.assertNotNull(dartsResults);
-        for (DartsResult result : dartsResults)
-        {
-            System.out.println(result);
-        }
-
-    }
 
     @Test
     public void testInsertUser()
@@ -71,7 +59,6 @@ public class DartsResultServiceTest
     {
         long timestamp = System.currentTimeMillis();
         DartsResult dartsResult = dartsResultService.getResultById(2);
-        System.out.println(dartsResult);
         /*
         dartsResult.setType("TestType" + timestamp);
         dartsResult.setScore(25);

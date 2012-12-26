@@ -6,6 +6,8 @@
     <properties resource='jdbc.properties'/>
     <typeAliases>
         <typeAlias type='darts.DartsResult' alias='DartsResult'></typeAlias>
+        <typeAlias type='darts.TwentiesResult' alias='TwentiesResult'></typeAlias>
+        <typeAlias type='darts.RoundResult' alias='RoundResult'></typeAlias>
     </typeAliases>
     <environments default="development">
         <environment id="development">

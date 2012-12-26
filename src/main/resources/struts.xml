@@ -7,25 +7,51 @@
 
 	<constant name="struts.devMode" value="true" />
 
+    <package name="default" extends="struts-default">
+
+        <action name="login" class="darts.UserAction" method="processLogin">
+            <result name="redirect" type="redirect">${url}</result>
+            <result name="error">login.jsp</result>
+        </action>
+
+        <action name="signup">
+            <result>signup.jsp</result>
+        </action>
+
+        <action name="processSignup" class="darts.UserAction" method="processSignup">
+            <result name="success">${url}</result>
+            <result name="error">signup.jsp</result>
+        </action>
+
+        <action name="games">
+            <result>/gamesHome.jsp</result>
+        </action>
+    </package>
+
+    <package name="games" namespace="/games" extends="struts-default">
+        <action name="twenties">
+            <result>/twenties.jsp</result>
+        </action>
+    </package>
+
 	<package name="basicstruts2" extends="struts-default">
 
 		<action name="home" >
 			<result>/index2.jsp</result>
 		</action>
-
-        <action name="insert" class="darts.MainController" method="sqlTest">
-            <result name="success">/user.jsp</result>
-        </action>
 		
 	</package>
 	<package name="users" namespace="/user" extends="struts-default">
-		<action name="/*" class="darts.MainController" method="execute">
+		<action name="/*">
 			<result name="success">/user.jsp</result>
 		</action>
 
 	</package>
     <package name="data" namespace="/data" extends="struts-default">
-        <action name="twenties" class="darts.MainController" method="insert"/>
+        <action name="twenties" class="darts.GamesAction" method="insertTwenties"/>
+        <action name="loadTwenties" class="darts.GamesAction" method="loadTwenties"/>
+        <action name="loadAllTwenties" class="darts.GamesAction" method="loadAllTwenties"/>
     </package>
+
 
 </struts>

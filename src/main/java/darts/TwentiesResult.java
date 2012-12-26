@@ -17,7 +17,9 @@ public class TwentiesResult extends DartsResult {
     private List<RoundResult> rounds;
 
     public TwentiesResult(List<RoundResult> rounds) {
+        setType("twenties");
         this.rounds = rounds;
+        calculateScore();
     }
 
     public List<RoundResult> getRoundResult() {
@@ -35,6 +37,16 @@ public class TwentiesResult extends DartsResult {
         rounds.add(new RoundResult(round, score));
     }
 
+    public void calculateScore() {
+        int score = 0;
+        for (RoundResult round : rounds) {
+            if (round != null) {
+                score += round.getScore();
+            }
+        }
+        this.setScore(score);
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (rounds != null) {
@@ -42,6 +54,8 @@ public class TwentiesResult extends DartsResult {
                 sb.append("round ").append(round.getRound()).append(" score was ").append(round.getScore()).append("\n");
             }
         }
+        sb.append("total score: ").append(getScore()).append("\n");
+        sb.append("dateTime: ").append(getDateTime());
         return sb.toString();
     }
 

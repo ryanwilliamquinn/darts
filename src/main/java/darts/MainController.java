@@ -9,6 +9,12 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.*;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.Factory;
+import org.apache.shiro.web.config.WebIniSecurityManagerFactory;
 import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +47,7 @@ public class MainController extends ActionSupport {
     }
 
 
-
+    /*
     public String execute() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         String uri = request.getRequestURI();
@@ -62,8 +68,16 @@ public class MainController extends ActionSupport {
         setResultsList(resultList);
 
         setUserName(name);
+
+        Subject currentUser = SecurityUtils.getSubject();
+        System.out.println(currentUser.getPrincipal());
+        if (currentUser.getPrincipal().toString().equals(name)) {
+            System.out.println("this is our page");
+        }
+
         return SUCCESS;
     }
+    */
 
     public String sqlTest() throws Exception {
         SqlSessionFactory sqlSessionFactory = getSqlSession();
@@ -81,38 +95,43 @@ public class MainController extends ActionSupport {
         return SUCCESS;
     }
 
-    public String insert() {
+
+    public String insert() throws Exception {
         SqlSessionFactory sqlSessionFactory = getSqlSession();
         SqlSession session = sqlSessionFactory.openSession();
 
         HttpServletRequest request = ServletActionContext.getRequest();
+        TwentiesResult tw = null;
         try {
             BufferedReader is = new BufferedReader(new InputStreamReader(request.getInputStream()));
             Type listType = new TypeToken<ArrayList<RoundResult>>() {}.getType();
-            Gson gson = new Gson();
             ArrayList<RoundResult> roundResultList = new Gson().fromJson(is, listType);
             //System.out.println(gson.toJson(roundResultList));
 
-            TwentiesResult tw = new TwentiesResult(roundResultList);
-            //System.out.println("twenties result: " + tw);
+            tw = new TwentiesResult(roundResultList);
+            DartsResultService dartsResultService = new DartsResultService();
+            dartsResultService.insertTwenties(tw);
+            tw.initializeDates();
         } catch (IOException e) {
             // log it here when logging is all set up
-        }
-
-        /*
-        try {
-            DartsResultService dartsResultService = new DartsResultService();
-            TwentiesResult dartsResult = new TwentiesResult();
-            dartsResult.setScore(30);
-            dartsResult.setType("twenties");
-            dartsResultService.insertResult(dartsResult);
-        } finally {
+        }  finally {
             session.close();
         }
-        */
+
+        if (tw != null) {
+            Gson gson = new Gson();
+            String json = gson.toJson(tw);
+            //System.out.println(json);
+            HttpServletResponse response = ServletActionContext.getResponse();
+            response.setHeader("Content-type", "application/json");
+            PrintWriter out = response.getWriter();
+            out.print(json);
+            out.flush();
+        }
 
         return NONE;
     }
+
 
     private SqlSessionFactory getSqlSession()  {
         String resource = "mybatis-config.xml";

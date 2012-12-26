@@ -26,6 +26,28 @@ public class DartsResultService
         }
     }
 
+
+    /**
+     * This method does the initial insert of the round with the total score and the game type, into darts result
+     * It returns the primary key, to be used for the foreign key in the insertRounds method.
+     * @param twenties
+     * @return
+     */
+    public void insertTwenties(TwentiesResult twenties) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
+        try {
+            DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
+            dartsMapper.insertGame(twenties);
+            int primaryKey = dartsMapper.getPrimaryKey();
+            for (RoundResult result : twenties.getRoundResult()) {
+                dartsMapper.insertRound(primaryKey, result);
+            }
+            sqlSession.commit();
+        }finally{
+            sqlSession.close();
+        }
+    }
+
     public DartsResult getResultById(Integer id) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{
@@ -36,11 +58,21 @@ public class DartsResultService
         }
     }
 
-    public List<DartsResult> getAllResults() {
+    public List<DartsResult> getAllResults(String userName, GameType type) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
-            return dartsMapper.getAllResults();
+            return dartsMapper.getAllResults(userName, type.getType());
+        }finally{
+            sqlSession.close();
+        }
+    }
+
+    public List<DartsResult> getTenResults(String userName, GameType type) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
+        try{
+            DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
+            return dartsMapper.getTenResults(userName, type.getType());
         }finally{
             sqlSession.close();
         }

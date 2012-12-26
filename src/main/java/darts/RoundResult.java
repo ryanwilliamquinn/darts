@@ -9,12 +9,21 @@ package darts;
  */
 public class RoundResult {
 
+    private int id;
     private int round;
     private int score;
 
     public RoundResult(int round, int score) {
         this.round = round;
         this.score = score;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getScore() {

@@ -1,9 +1,19 @@
 body {margin:0px;}
 h3 {margin:0px;}
-.header {width:100%; background-color:#eee; border-bottom:2px solid #ccc; margin-bottom:5px;}
+.header {width:100%; background-color:#eee; border-bottom:2px solid #ccc; margin-bottom:5px; line-height:30px;}
 .content {width:780px; margin:0 auto;}
 .scoreInput {width:40px; margin:10px;}
 #headerContent {width:780px; margin:0px auto;}
 #headerTitle {float:left;}
-.headerAccount {float:right; font-size:12px; line-height:20px;}
+.headerAccount {float:right; font-size:12px;}
+.errorMessage {font-size:13px; color:red;}
+input.ng-invalid.ng-dirty {border:solid 2px red;}
+input.ng-valid.ng-dirty {border:solid 2px green;}
+.error {color:red; font-size:13px;}
+.blueButton {display:inline-block; height:25px; line-height:25px; background-color:blue; text-decoration:none; color:white; margin:5px 0px;
+             text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 5px;}
+
+
+
+
 
