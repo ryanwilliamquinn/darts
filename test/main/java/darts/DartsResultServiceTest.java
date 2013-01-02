@@ -43,7 +43,7 @@ public class DartsResultServiceTest
     public void testInsertUser()
     {
         DartsResult dartsResult = new DartsResult();
-        dartsResult.setType("twenties");
+        dartsResult.setType(PracticeType.TWENTIES);
         dartsResult.setScore(30);
 
         dartsResultService.insertResult(dartsResult);

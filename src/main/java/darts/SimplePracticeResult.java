@@ -1,5 +1,9 @@
 package darts;
 
+import darts.DartsResult;
+import darts.PracticeType;
+import darts.RoundResult;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +16,18 @@ import java.util.Map;
  * Time: 5:55 PM
  * To change this template use File | Settings | File Templates.
  */
-public class TwentiesResult extends DartsResult {
+public class SimplePracticeResult extends DartsResult {
 
     private List<RoundResult> rounds;
 
-    public TwentiesResult(List<RoundResult> rounds) {
-        setType("twenties");
+    public SimplePracticeResult(List<RoundResult> rounds, String type) {
+        this.rounds = rounds;
+        calculateScore();
+        PracticeType.getPracticeTypeForString(type);
+    }
+
+    public SimplePracticeResult(List<RoundResult> rounds, PracticeType type) {
+        setType(type);
         this.rounds = rounds;
         calculateScore();
     }

@@ -1,8 +1,6 @@
 package darts;
 
 import org.apache.ibatis.annotations.Param;
-
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,7 +14,7 @@ public interface DartsMapper {
 
     public void insertResult(DartsResult dartsResult);
 
-    public void insertGame(TwentiesResult twentiesResult);
+    public void insertGame(SimplePracticeResult simplePracticeResult);
 
     public void insertUser(@Param("name") String name, @Param("encryptedPassword") String encryptedPassword);
 
@@ -29,6 +27,8 @@ public interface DartsMapper {
     public List<DartsResult> getAllResults(@Param("username") String username, @Param("type") String type);
 
     public List<DartsResult> getTenResults(@Param("username") String username, @Param("type") String type);
+
+    public int getNumResults(@Param("username") String username, @Param("type") String type);
 
     public void updateResult(DartsResult dartsResult);
 

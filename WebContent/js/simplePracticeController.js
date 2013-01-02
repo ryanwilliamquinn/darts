@@ -1,16 +1,28 @@
 'use strict';
 
-var dartsApp = angular.module('dartsApp', []);
-
 /* Controllers */
 
-dartsApp.controller("mainController", function mainController($scope, $http) {
+/*
+function PhoneListCtrl($scope, $http) {
+  $http.get('phones/phones.json').success(function(data) {
+    $scope.phones = data;
+  });
+
+  $scope.orderProp = 'age';
+}
+*/
+angular.module("dartsApp.controller", []);
+function mainController($scope, $http, $log, practiceNameService) {
+    $scope.practiceType = practiceNameService.practiceUrl;
     $scope.round = {"number" : 1};
     $scope.results = [];
-    $scope.postUrl = "/data/twenties";
-    $scope.loadUrl = "/data/loadTwenties";
-    $scope.loadAllUrl = "/data/loadAllTwenties";
+    $scope.urlPracticeType = capitaliseFirstLetter($scope.practiceType)
+    $scope.postUrl = "/data/" + $scope.practiceType;
+    $scope.loadUrl = "/data/load" + $scope.urlPracticeType;
+    $scope.loadAllUrl = "/data/loadAll" + $scope.urlPracticeType;
     $scope.games = [];
+    $scope.displayShowAll = "hide";
+    $scope.predicate = '-dateMillis';
 
 
     $scope.recordResult = function(result) {
@@ -19,7 +31,6 @@ dartsApp.controller("mainController", function mainController($scope, $http) {
             $scope.results.push(newResult);
             $scope.round.number++;
             result.score = "";
-
         }
     }
     $scope.postResult = function() {
@@ -34,6 +45,7 @@ dartsApp.controller("mainController", function mainController($scope, $http) {
                     //$scope.status = status;
                     //$scope.data = data;
                     //$scope.postResult = data; // Show result from server in our <pre></pre> element
+                    $log.info(data);
                     $scope.results = [];
                     $scope.round.number = 1;
                     if (data) {
@@ -51,28 +63,43 @@ dartsApp.controller("mainController", function mainController($scope, $http) {
 
     $scope.showAll = function() {
         $scope.games = [];
-        $scope.getTwenties($scope.loadAllUrl);
+        $scope.displayShowAll = "hide";
+        $scope.getResults($scope.loadAllUrl);
     }
 
-    $scope.getTwenties = function(url) {
+    $scope.getResults = function(url) {
         $http.get(url).
                 success(function(data, status) {
-                    for (var i=0; i < data.length; i++) {
-                        var tempdata = data[i];
+                    //$log.info(data);
+                    $scope.numResults = data.totalNumResults;
+                    var tempResults = data.dartsResults;
+                    //$log.info(tempResults);
+                    var resultsLength = tempResults.length;
+                    //$log.info("results length: " + resultsLength + ", total number of results: " + $scope.numResults);
+                    if (resultsLength < $scope.numResults) {
+                        $scope.displayShowAll = "block";
+                    } else {
+                        $scope.displayShowAll = "hide";
+                    }
+                    for (var i=0; i < resultsLength; i++) {
+                        var tempdata = tempResults[i];
                         var oldRound = {};
                         oldRound.date = tempdata.displayDateTime;
                         oldRound.score = tempdata.score;
-                        $scope.games.push(oldRound);
+                        oldRound.dateMillis = tempdata.dateMilliseconds;
+                        if (tempdata.score && tempdata.displayDateTime) {
+                            $scope.games.push(oldRound);
+                        }
                     }
+
                 }).
                 error(function(data, status) {
-                    console.log("failed")
+                    $log.error("failed")
                 })
     }
 
 
-
-    $scope.getTwenties($scope.loadUrl);
+    $scope.getResults($scope.loadUrl);
 
 
 
@@ -83,7 +110,9 @@ dartsApp.controller("mainController", function mainController($scope, $http) {
             return value;
         }
     }
-});
+}
+
+//mainController.$inject = [];
 
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);

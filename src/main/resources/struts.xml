@@ -23,15 +23,17 @@
             <result name="error">signup.jsp</result>
         </action>
 
-        <action name="games">
-            <result>/gamesHome.jsp</result>
+        <action name="practice">
+            <result>/practiceHome.jsp</result>
         </action>
     </package>
 
-    <package name="games" namespace="/games" extends="struts-default">
-        <action name="twenties">
-            <result>/twenties.jsp</result>
+    <package name="practice" namespace="/practice" extends="struts-default">
+        <action name="/**" class="darts.action.PracticeAction" method="practiceTemplate">
+            <result name="success">/practiceTemplate.jsp</result>
+            <result name="error" type="redirect">/practice</result>
         </action>
+
     </package>
 
 	<package name="basicstruts2" extends="struts-default">
@@ -48,9 +50,9 @@
 
 	</package>
     <package name="data" namespace="/data" extends="struts-default">
-        <action name="twenties" class="darts.GamesAction" method="insertTwenties"/>
-        <action name="loadTwenties" class="darts.GamesAction" method="loadTwenties"/>
-        <action name="loadAllTwenties" class="darts.GamesAction" method="loadAllTwenties"/>
+        <action name="loadAll*" class="darts.action.SimplePracticeAction" method="loadAll"/>
+        <action name="load*" class="darts.action.SimplePracticeAction" method="load"/>
+        <action name="*" class="darts.action.SimplePracticeAction" method="insert"/>
     </package>
 
 

@@ -1,4 +1,5 @@
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!doctype html>
 <html lang="en" ng-app="dartsApp">
@@ -6,8 +7,11 @@
         <title>freaking darts</title>
         <link rel="stylesheet" href="/css/main.css" type="text/css"/>
         <script src="/js/angular/angular.js"></script>
-        <script src="/js/app.js"></script>
         <script src="/js/directives.js"></script>
+        <script src="/js/services.js"></script>
+        <script src="/js/filters.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/dartsApp.js"></script>
     </head>
     <body>
         <div class="header">
@@ -19,7 +23,10 @@
                         <a href="/login">Login</a> | <a href="signup.jsp">Signup</a>
                     </shiro:guest>
                     <shiro:user>
-                        <a href="/logout">Logout</a>
+                        <c:set var="username">
+                        <shiro:principal/>
+                        </c:set>
+                        <a href="/user/${username}">Your Account</a> | <a href="/logout">Logout</a>
                     </shiro:user>
                 </div>
                 <div style="clear:both;"> </div>

@@ -3,7 +3,7 @@
 <jsp:include page="header.jsp"/>
 <script src="/js/controllers.js"></script>
 
-<form name="loginform" action="/login" method="post" ng-controller="loginController">
+<form name="loginform" action="/login" method="post">
     <table align="left" border="0" cellspacing="0" cellpadding="3">
         <tr>
             <td>Username:</td>

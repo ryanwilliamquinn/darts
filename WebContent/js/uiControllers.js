@@ -1,7 +1,8 @@
+'use strict';
 
-var dartsApp = angular.module('dartsApp', ['ui']);
+angular.module("dartsApp.controller", ["ui"]);
 
-dartsApp.controller("userController", function userController($scope) {
+function userController($scope) {
 
     $scope.user = {"name" : "", "password" : "", "passwordConfirm" : ""};
     // would be great to be able to do this without referencing the document...
@@ -30,4 +31,5 @@ dartsApp.controller("userController", function userController($scope) {
     $scope.notBlackListed = function(value) {
         return $scope.blackList.indexOf(value) === -1;
     };
-});
+};
+

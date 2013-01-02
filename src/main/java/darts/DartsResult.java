@@ -16,12 +16,14 @@ import org.joda.time.format.DateTimeFormatter;
 public class DartsResult {
 
     private int id;
-    private String type;
+    private PracticeType type;
     @Expose private int score;
     private String mySqlDateTime;
     @Expose private String displayDateTime;
     private DateTime dateTime;
     private String username;
+    // date millis used for sorting on the front end
+    @Expose private long dateMilliseconds;
 
     public String getUsername() {
         return username;
@@ -42,11 +44,11 @@ public class DartsResult {
         this.id = id;
     }
 
-    public String getType() {
+    public PracticeType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PracticeType type) {
         this.type = type;
     }
 
@@ -104,14 +106,23 @@ public class DartsResult {
         DateTime dateTime = DateTime.parse(mySqlDateTime);
     }
 
+    public long getDateMilliseconds() {
+        return dateMilliseconds;
+    }
+
+    public void setDateMilliseconds(long dateMilliseconds) {
+        this.dateMilliseconds = dateMilliseconds;
+    }
+
     public void initializeDates() {
         if (dateTime == null) {
             dateTime = DateTime.now();
         }
         DateTimeFormatter fmt2 = DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ss");
-        this.mySqlDateTime = fmt2.print(this.dateTime);
+        this.mySqlDateTime = fmt2.print(dateTime);
         DateTimeFormatter fmt3 = DateTimeFormat.forPattern("MMM dd, yyyy");
-        displayDateTime = fmt3.print(this.dateTime);
+        displayDateTime = fmt3.print(dateTime);
+        dateMilliseconds = dateTime.getMillis();
     }
 
 

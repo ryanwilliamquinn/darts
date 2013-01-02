@@ -1,5 +1,7 @@
 body {margin:0px;}
 h3 {margin:0px;}
+.block {display:block;}
+.hide {display:none;}
 .header {width:100%; background-color:#eee; border-bottom:2px solid #ccc; margin-bottom:5px; line-height:30px;}
 .content {width:780px; margin:0 auto;}
 .scoreInput {width:40px; margin:10px;}

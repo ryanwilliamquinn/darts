@@ -8,7 +8,7 @@
 </shiro:guest>
 
 <shiro:user>
-    <jsp:include page="games.jsp"/>
+    <jsp:include page="practice.jsp"/>
 </shiro:user>
 
 <jsp:include page="footer.jsp"/>

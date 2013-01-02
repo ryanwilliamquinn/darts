@@ -9,11 +9,15 @@ package darts;
  */
 
 import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
-import org.apache.ibatis.session.SqlSession;
 
 public class DartsResultService
 {
+
+    private static final Logger slf4jLogger = LoggerFactory.getLogger(DartsResultService.class);
 
     public void insertResult(DartsResult dartsResult) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
@@ -30,16 +34,16 @@ public class DartsResultService
     /**
      * This method does the initial insert of the round with the total score and the game type, into darts result
      * It returns the primary key, to be used for the foreign key in the insertRounds method.
-     * @param twenties
+     * @param spr
      * @return
      */
-    public void insertTwenties(TwentiesResult twenties) {
+    public void insertTwenties(SimplePracticeResult spr) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try {
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
-            dartsMapper.insertGame(twenties);
+            dartsMapper.insertGame(spr);
             int primaryKey = dartsMapper.getPrimaryKey();
-            for (RoundResult result : twenties.getRoundResult()) {
+            for (RoundResult result : spr.getRoundResult()) {
                 dartsMapper.insertRound(primaryKey, result);
             }
             sqlSession.commit();
@@ -58,21 +62,34 @@ public class DartsResultService
         }
     }
 
-    public List<DartsResult> getAllResults(String userName, GameType type) {
+    public DartsResultResponse getAllResults(String userName, PracticeType type) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
-            return dartsMapper.getAllResults(userName, type.getType());
+            String typeValue = type.getValue();
+            DartsResultResponse dartsResultResponse = new DartsResultResponse();
+            List<DartsResult> resultsList =  dartsMapper.getAllResults(userName, typeValue);
+            dartsResultResponse.setDartsResults(resultsList);
+            int totalNumResults = dartsMapper.getNumResults(userName, typeValue);
+            dartsResultResponse.setTotalNumResults(totalNumResults);
+            return dartsResultResponse;
         }finally{
             sqlSession.close();
         }
     }
 
-    public List<DartsResult> getTenResults(String userName, GameType type) {
+    public DartsResultResponse getTenResults(String userName, PracticeType type) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
-            return dartsMapper.getTenResults(userName, type.getType());
+            String typeValue = type.getValue();
+            slf4jLogger.debug("sql info for get ten results - username: " + userName + ", type: " + typeValue);
+            DartsResultResponse dartsResultResponse = new DartsResultResponse();
+            List<DartsResult> dartsResults = dartsMapper.getTenResults(userName, typeValue);
+            dartsResultResponse.setDartsResults(dartsResults);
+            int totalNumResults = dartsMapper.getNumResults(userName,typeValue);
+            dartsResultResponse.setTotalNumResults(totalNumResults);
+            return dartsResultResponse;
         }finally{
             sqlSession.close();
         }
