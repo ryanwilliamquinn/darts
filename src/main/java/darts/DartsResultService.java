@@ -37,7 +37,8 @@ public class DartsResultService
      * @param spr
      * @return
      */
-    public void insertTwenties(SimplePracticeResult spr) {
+    public void insertGame(SimplePracticeResult spr) {
+        slf4jLogger.debug(spr.getType() + " " + spr.getScore() + " " + spr.getMySqlDateTime() + " " + spr.getUsername());
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try {
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
@@ -62,7 +63,7 @@ public class DartsResultService
         }
     }
 
-    public DartsResultResponse getAllResults(String userName, PracticeType type) {
+    public DartsResultResponse getAllResults(String userName, BasePracticeType type) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
@@ -78,7 +79,7 @@ public class DartsResultService
         }
     }
 
-    public DartsResultResponse getTenResults(String userName, PracticeType type) {
+    public DartsResultResponse getTenResults(String userName, BasePracticeType type) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{
             DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
@@ -86,6 +87,9 @@ public class DartsResultService
             slf4jLogger.debug("sql info for get ten results - username: " + userName + ", type: " + typeValue);
             DartsResultResponse dartsResultResponse = new DartsResultResponse();
             List<DartsResult> dartsResults = dartsMapper.getTenResults(userName, typeValue);
+            for (DartsResult dr : dartsResults) {
+                dr.initializeDates();
+            }
             dartsResultResponse.setDartsResults(dartsResults);
             int totalNumResults = dartsMapper.getNumResults(userName,typeValue);
             dartsResultResponse.setTotalNumResults(totalNumResults);

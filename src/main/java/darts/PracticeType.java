@@ -9,18 +9,20 @@ import org.apache.commons.lang3.StringUtils;
  * Time: 7:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public enum PracticeType {
+public enum PracticeType implements BasePracticeType {
 
-    TWENTIES ("twenties", true),
-    THREE_OH_ONE ("301", true),
-    BULLS ("bulls", true);
+    TARGET ("target", true, "target.jsp"),
+    MULTI_TARGET ("multi-target", false, "multiTarget.jsp"),
+    THREE_OH_ONE ("301", false, "threeOhOne.jsp");
 
     private String value;
     private boolean simple;
+    private String template;
 
-    private PracticeType(String value, boolean simple) {
+    private PracticeType(String value, boolean simple, String template) {
         this.value = value;
         this.simple = simple;
+        this.template = template;
     }
 
 
@@ -31,6 +33,11 @@ public enum PracticeType {
     public boolean isSimple() {
         return simple;
     }
+
+    public String getTemplate() {
+        return template;
+    }
+
 
     public static PracticeType getPracticeTypeForString(String type) {
         PracticeType pt = null;

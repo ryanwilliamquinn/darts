@@ -22,6 +22,12 @@ import java.io.*;
  */
 public class PracticeAction extends ActionSupport {
 
+    private String practiceTemplate;
+
+    public String getPracticeTemplate() {
+        return practiceTemplate;
+    }
+
     private static final Logger slf4jLogger = LoggerFactory.getLogger(PracticeAction.class);
 
     protected SqlSessionFactory getSqlSession()  {
@@ -37,6 +43,8 @@ public class PracticeAction extends ActionSupport {
 
     public String practiceTemplate() throws Exception {
         PracticeType practiceType = getPracticeTypeFromString("practice/");
+
+        practiceTemplate = practiceType.getTemplate();
 
         if (practiceType == null) {
             // this was logged in getpracticetype. so just do what you're gonna do here...

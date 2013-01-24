@@ -26,7 +26,7 @@ public class SimplePracticeResult extends DartsResult {
         PracticeType.getPracticeTypeForString(type);
     }
 
-    public SimplePracticeResult(List<RoundResult> rounds, PracticeType type) {
+    public SimplePracticeResult(List<RoundResult> rounds, BasePracticeType type) {
         setType(type);
         this.rounds = rounds;
         calculateScore();
@@ -65,7 +65,8 @@ public class SimplePracticeResult extends DartsResult {
             }
         }
         sb.append("total score: ").append(getScore()).append("\n");
-        sb.append("dateTime: ").append(getDateTime());
+        sb.append("dateTime: ").append(getDateTime()).append("\n");
+        sb.append("type: ").append(getType());
         return sb.toString();
     }
 

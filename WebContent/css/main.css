@@ -9,11 +9,18 @@ h3 {margin:0px;}
 #headerTitle {float:left;}
 .headerAccount {float:right; font-size:12px;}
 .errorMessage {font-size:13px; color:red;}
-input.ng-invalid.ng-dirty {border:solid 2px red;}
-input.ng-valid.ng-dirty {border:solid 2px green;}
+/* need to set up some rules for this, don't want all inputs to deal with this.  just for signup at this point i think */
+#signupform input.ng-invalid.ng-dirty {border:solid 2px red;}
+#signupform input.ng-valid.ng-dirty {border:solid 2px green;}
 .error {color:red; font-size:13px;}
 .blueButton {display:inline-block; height:25px; line-height:25px; background-color:blue; text-decoration:none; color:white; margin:5px 0px;
-             text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 5px;}
+             text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 5px;
+             cursor:pointer;}
+.smallBlueButton {display:inline-block; height:18px; line-height:18px; font-size:13px; background-color:blue; text-decoration:none; color:white; margin:5px 0px;
+                               text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 6px;
+                               cursor:pointer;}
+.rounds {float:left; margin-bottom:20px;}
+
 
 
 

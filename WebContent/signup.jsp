@@ -4,10 +4,10 @@
 <script src="/js/uiControllers.js"></script>
 <script type="text/javascript" src="/js/angularUI/module.js"></script>
 <script type="text/javascript" src="/js/angularUI/validate.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/jquery/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="/js/jquery/jquery-ui-1.9.2.custom.js"></script>
     <div>${errorMessage}
-    <form name="signupform" novalidate method="post" ng-submit="newUser(this)" ng-controller="userController">
+    <form name="signupform" id="signupform" novalidate method="post" ng-submit="newUser(this)" ng-controller="userController">
         <table align="left" border="0" cellspacing="0" cellpadding="3">
             <tr>
                 <td>Username:</td>

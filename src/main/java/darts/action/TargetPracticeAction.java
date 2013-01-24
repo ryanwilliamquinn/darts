@@ -26,9 +26,9 @@ import java.util.ArrayList;
  * Time: 10:59 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SimplePracticeAction extends PracticeAction {
+public class TargetPracticeAction extends PracticeAction {
 
-    private static final Logger slf4jLogger = LoggerFactory.getLogger(SimplePracticeAction.class);
+    private static final Logger slf4jLogger = LoggerFactory.getLogger(TargetPracticeAction.class);
 
     public String insert() throws Exception {
 
@@ -38,7 +38,7 @@ public class SimplePracticeAction extends PracticeAction {
         HttpServletRequest request = ServletActionContext.getRequest();
         String url = request.getRequestURI();
         String type = StringUtils.substringAfter(url, "/data/");
-        PracticeType practiceType = PracticeType.getPracticeTypeForString(type);
+        TargetPracticeType practiceType = TargetPracticeType.getTargetPracticeTypeForString(type);
 
         if (practiceType == null) {
             slf4jLogger.error("practice type is not recognized: " + type + ", redirecting back to the practie page");
@@ -60,8 +60,9 @@ public class SimplePracticeAction extends PracticeAction {
             simplePracticeResult = new SimplePracticeResult(roundResultList, practiceType);
             Subject currentUser = SecurityUtils.getSubject();
             simplePracticeResult.setUsername(currentUser.getPrincipal().toString());
+            slf4jLogger.debug("simple practice result: " + simplePracticeResult);
             DartsResultService dartsResultService = new DartsResultService();
-            dartsResultService.insertTwenties(simplePracticeResult);
+            dartsResultService.insertGame(simplePracticeResult);
             simplePracticeResult.initializeDates();
         } catch (IOException e) {
             slf4jLogger.error("Error inserting data: " + e);
@@ -94,11 +95,11 @@ public class SimplePracticeAction extends PracticeAction {
         HttpServletRequest request = ServletActionContext.getRequest();
         String url = request.getRequestURI();
         String type = StringUtils.substringAfter(url, "/data/load");
-        PracticeType practiceType = PracticeType.getPracticeTypeForString(type);
-        slf4jLogger.debug("practiceType: " + practiceType.getValue());
+        TargetPracticeType practiceType = TargetPracticeType.getTargetPracticeTypeForString(type);
+        slf4jLogger.debug("targetPracticeType: " + practiceType.getValue());
 
         if (practiceType == null) {
-            slf4jLogger.error("practice type is not recognized: " + type + ", redirecting back to the practie page");
+            slf4jLogger.error("practice type is not recognized: " + type + ", returning no data ");
             // maybe return a json error message to the front end?
             return NONE;
         }
@@ -114,6 +115,7 @@ public class SimplePracticeAction extends PracticeAction {
         if (dartsResultResponse != null && dartsResultResponse.getDartsResults() != null && dartsResultResponse.getDartsResults().size() > 0) {
             Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
             String json = gson.toJson(dartsResultResponse);
+            //slf4jLogger.info("json response: " + json);
             HttpServletResponse response = ServletActionContext.getResponse();
             response.setHeader("Content-type", "application/json");
             PrintWriter out = response.getWriter();
@@ -133,7 +135,7 @@ public class SimplePracticeAction extends PracticeAction {
         HttpServletRequest request = ServletActionContext.getRequest();
         String url = request.getRequestURI();
         String type = StringUtils.substringAfter(url, "/data/loadAll");
-        PracticeType practiceType = PracticeType.getPracticeTypeForString(type);
+        TargetPracticeType practiceType = TargetPracticeType.getTargetPracticeTypeForString(type);
 
         if (practiceType == null) {
             slf4jLogger.error("practice type is not recognized: " + type + ", redirecting back to the practie page");

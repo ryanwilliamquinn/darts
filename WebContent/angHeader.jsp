@@ -6,6 +6,12 @@
     <head>
         <title>freaking darts</title>
         <link rel="stylesheet" href="/css/main.css" type="text/css"/>
+        <script src="/js/angular/angular.js"></script>
+        <script src="/js/directives.js"></script>
+        <script src="/js/services.js"></script>
+        <script src="/js/dartsFilters.js"></script>
+        <script src="/js/utils.js"></script>
+        <script src="/js/dartsApp.js"></script>
     </head>
     <body>
         <div class="header">

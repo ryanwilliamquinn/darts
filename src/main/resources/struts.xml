@@ -30,7 +30,7 @@
 
     <package name="practice" namespace="/practice" extends="struts-default">
         <action name="/**" class="darts.action.PracticeAction" method="practiceTemplate">
-            <result name="success">/practiceTemplate.jsp</result>
+            <result name="success">/${practiceTemplate}</result>
             <result name="error" type="redirect">/practice</result>
         </action>
 
@@ -50,9 +50,9 @@
 
 	</package>
     <package name="data" namespace="/data" extends="struts-default">
-        <action name="loadAll*" class="darts.action.SimplePracticeAction" method="loadAll"/>
-        <action name="load*" class="darts.action.SimplePracticeAction" method="load"/>
-        <action name="*" class="darts.action.SimplePracticeAction" method="insert"/>
+        <action name="loadAll*" class="darts.action.TargetPracticeAction" method="loadAll"/>
+        <action name="load*" class="darts.action.TargetPracticeAction" method="load"/>
+        <action name="*" class="darts.action.TargetPracticeAction" method="insert"/>
     </package>
 
 

@@ -49,7 +49,7 @@
 
     <insert id='insertGame' parameterType='DartsResult' useGeneratedKeys='true' keyProperty='id'>
         INSERT INTO darts_result(type, score, date, user)
-        VALUES(#{type}, #{score}, #{mySqlDateTime}, #{username})
+        VALUES(#{type.value}, #{score}, #{mySqlDateTime}, #{username})
     </insert>
 
     <insert id='insertRound' parameterType='map' useGeneratedKeys='true' keyProperty='roundResult.id'>

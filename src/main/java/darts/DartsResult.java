@@ -16,7 +16,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class DartsResult {
 
     private int id;
-    private PracticeType type;
+    private BasePracticeType type;
     @Expose private int score;
     private String mySqlDateTime;
     @Expose private String displayDateTime;
@@ -44,11 +44,11 @@ public class DartsResult {
         this.id = id;
     }
 
-    public PracticeType getType() {
+    public BasePracticeType getType() {
         return type;
     }
 
-    public void setType(PracticeType type) {
+    public void setType(BasePracticeType type) {
         this.type = type;
     }
 

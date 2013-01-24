@@ -6,7 +6,9 @@ files = [
   'angular/angular.js',
   'angular/angular-*.js',
   'test/lib/angular/angular-mocks.js',
-  '*.js',
+  'simplePracticeController.js',
+  'dartsFilters.js',
+  'utils.js',
   'test/*.js',
   'test/unit/**/*.js'
 ];
