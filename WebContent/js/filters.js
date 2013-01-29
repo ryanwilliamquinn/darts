@@ -15,6 +15,6 @@ angular.module('dartsApp.filters', []).
             }
             //$log.info(sum);
             var average = sum/length;
-            return "Round average: " + average.toFixed(1);
+            return average.toFixed(1);
         }
     });

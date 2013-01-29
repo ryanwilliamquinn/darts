@@ -9,13 +9,20 @@ function mainController($scope, $http, $log, practiceNameService) {
     $scope.numRoundsAvailable = [{id : "5", rounds : "five", num : 5}, {id : "10", rounds : "ten", num : 10}];
     $scope.numRounds = $scope.numRoundsAvailable[1];
     $scope.isShowRounds = false;
+    $scope.initialNumGames = 10;
 
     $scope.games = [];
+    $scope.allGames = [];
+    $scope.needsShowAll = true;
+    $scope.allDataLoaded = false;
     $scope.displayShowAll = "hide";
     $scope.predicate = '-dateMillis';
 
-    $scope.targetTypes = [{id : "bull", label : "bullseye"}, {id : "t20", label : "triple 20"}, {id : "d20", label : "double 20"}, {id : "20", label :"20"},
-                            {id : "t19", label : "triple 19"}, {id : "d19", label : "double 19"}, {id : "19", label : "19"}];
+    //$scope.targetTypes = [{id : "bull", label : "bullseye"}, {id : "t20", label : "triple 20"}, {id : "d20", label : "double 20"}, {id : "20", label :"20"},
+    //                        {id : "t19", label : "triple 19"}, {id : "d19", label : "double 19"}, {id : "19", label : "19"}];
+
+    $scope.targetTypes = [{id : "bull", label : "bullseye"}, {id : "20", label :"20"}, {id : "19", label :"19"}, {id : "18", label :"18"}, {id : "17", label :"17"},
+                            {id : "16", label :"16"}, {id : "15", label :"15"}]
 
     $scope.target = $scope.targetTypes[0];
 
@@ -36,7 +43,7 @@ function mainController($scope, $http, $log, practiceNameService) {
 
     $scope.changedTarget = function() {
         $scope.setUpUrls();
-        $scope.getResults($scope.loadUrl);
+        $scope.getData();
     }
 
     $scope.cancelRound = function() {
@@ -89,34 +96,55 @@ function mainController($scope, $http, $log, practiceNameService) {
 
     $scope.showAll = function() {
         $scope.games = [];
-        $scope.displayShowAll = "hide";
-        $scope.getResults($scope.loadAllUrl);
+        if ($scope.allGames.length == 0) {
+            $scope.getResults($scope.loadAllUrl, $scope.games);
+        } else if ($scope.allGames.length > 0) {
+            $scope.games = $scope.allGames;
+        }
+        $scope.needsShowAll = false;
     }
 
-    $scope.getResults = function(url) {
+
+
+    $scope.loadAll = function() {
+        $scope.getResults($scope.loadAllUrl, $scope.allGames);
+        if ($scope.allGames.length > 0) {
+            // flip the switch to show historical averages and stuff
+            $scope.allDataLoaded = true;
+        }
+    }
+
+    // gamesContainer is where we store the games that we parse from the response.  for the first request
+    // we store them in the view container, for the lifetime stats we store them in a hidden container
+    $scope.getResults = function(url, gamesContainer) {
         $http.get(url).
                 success(function(data, status) {
                     //$log.info(data);
+
                     $scope.numResults = data.totalNumResults;
                     var tempResults = data.dartsResults;
-                    //$log.info(tempResults);
+                    $log.info(tempResults);
                     if (tempResults) {
                         var resultsLength = tempResults.length;
                         //$log.info("results length: " + resultsLength + ", total number of results: " + $scope.numResults);
-                        if (resultsLength < $scope.numResults) {
-                            $scope.displayShowAll = "block";
-                        } else {
-                            $scope.displayShowAll = "hide";
-                        }
+
                         for (var i=0; i < resultsLength; i++) {
                             var tempdata = tempResults[i];
                             var oldRound = {};
+                            oldRound.id = tempdata.id;
                             oldRound.date = tempdata.displayDateTime;
                             oldRound.score = tempdata.score;
                             oldRound.dateMillis = tempdata.dateMilliseconds;
                             if (tempdata.score && tempdata.displayDateTime) {
-                                $scope.games.push(oldRound);
+                                gamesContainer.push(oldRound);
                             }
+                        }
+                        if ($scope.initialNumGames >= resultsLength && resultsLength < $scope.numResults) {
+                            $scope.needsShowAll = true;
+                            $scope.loadAll();
+                        } else if ($scope.initialNumGames >= resultsLength && resultsLength >= $scope.numResults) {
+                            $scope.needsShowAll = false;
+                            $scope.allGames = $scope.games
                         }
                     }
                 }).
@@ -125,12 +153,34 @@ function mainController($scope, $http, $log, practiceNameService) {
                 })
     }
 
+    $scope.getData = function() {
+        // first, load the last 10 results, show this right away
+        $scope.getResults($scope.loadUrl, $scope.games);
+    }
 
-    $scope.getResults($scope.loadUrl);
+    $scope.getData();
+
+    $scope.$watch(
+        function() {return $scope.allGames},
+        function() {$log.info("all games loaded")}
+    );
+
+    $scope.gameClicked = function() {
+        var url = "/data/gameDetails" + this.game.id;
+        $log.info("url: " + url);
+        // this.game.id gets us the game id.
+        //$log.info(this.game);
+        $http.get(url).
+            success(function(data, status) {
+                $log.info(data);
+            }).
+            error(function(data, status) {
+                $log.error("failed")
+            })
+
+    }
 
     //$scope.watcher = watchTheLocation;
-
-
 
     var replacer = function(key, value) {
         if (key=="$$hashKey") {

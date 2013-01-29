@@ -26,21 +26,21 @@
             </div>
         </div>
         <div style="float:left; margin:10px 0px 0px 20px;">
-            {{results|average}}
+            Round average: {{results|average}}
         </div>
-        <div style="margin-top:30px;">
+        <div style="clear:both; float:left; margin-top:30px;">
             <div style="border-bottom:solid 1px #000; margin-bottom:20px; padding-bottom:2px; width:200px;">Past ${practiceMode} totals:</div>
-            <div ng-repeat="game in games | orderBy:predicate">
+            <div ng-repeat="game in games | orderBy:predicate" ng-click="gameClicked()">
                 <span>{{game.date}}</span>
                 <span style="margin-left:16px;">score: {{game.score}}</span>
             </div>
-
+        </div>
+        <div style="margin:30px 0px 0px 20px; float:left;">
+            All time average: {{allGames|average}}
         </div>
     </div>
     <a href="/practice" style="display:block; float:right;" class="blueButton">Practice home</a>
-
-    <%-- should hide this section if all results are shown --%>
-    <div style="clear:both;" class="{{displayShowAll}}">
+    <div style="clear:both;" ng-show="needsShowAll">
         <span ng-click="showAll()" style="cursor:pointer;" class="blueButton">Show all results</span>
     </div>
 </div>

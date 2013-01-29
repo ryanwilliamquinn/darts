@@ -26,6 +26,8 @@ public interface DartsMapper {
 
     public List<DartsResult> getAllResults(@Param("username") String username, @Param("type") String type);
 
+    public List<RoundResult> getGameDetails(int gameId);
+
     public List<DartsResult> getTenResults(@Param("username") String username, @Param("type") String type);
 
     public int getNumResults(@Param("username") String username, @Param("type") String type);

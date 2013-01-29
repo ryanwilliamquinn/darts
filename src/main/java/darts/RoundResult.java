@@ -1,5 +1,7 @@
 package darts;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Created with IntelliJ IDEA.
  * User: rquinn
@@ -9,9 +11,11 @@ package darts;
  */
 public class RoundResult {
 
-    private int id;
-    private int round;
-    private int score;
+    @Expose private int id;
+    @Expose private int round;
+    @Expose private int score;
+
+    public RoundResult(){};
 
     public RoundResult(int round, int score) {
         this.round = round;

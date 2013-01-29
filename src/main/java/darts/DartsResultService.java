@@ -123,4 +123,15 @@ public class DartsResultService
 
     }
 
+    public List<RoundResult> getGameDetails(int gameId) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
+        try{
+            DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
+            List<RoundResult> rounds = dartsMapper.getGameDetails(gameId);
+            return rounds;
+        }finally{
+            sqlSession.close();
+        }
+    }
+
 }

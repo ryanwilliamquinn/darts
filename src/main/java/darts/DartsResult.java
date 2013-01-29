@@ -15,7 +15,7 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class DartsResult {
 
-    private int id;
+    @Expose private int id;
     private BasePracticeType type;
     @Expose private int score;
     private String mySqlDateTime;

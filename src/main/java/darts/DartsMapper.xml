@@ -11,7 +11,13 @@
         <result property='dateTime' column='date'/>
     </resultMap>
 
-    <select id='getResultById' parameterType='int' resultType='darts.DartsResult'>
+    <resultMap type='darts.RoundResult' id='gameDetails'>
+        <result property='id' column='id'/>
+        <result property='round' column='round'/>
+        <result property='score' column='score'/>
+    </resultMap>
+
+    <select id='getResultById' parameterType='int' resultMap="dartsResultValue">
         SELECT
         id as id,
         type as type,
@@ -59,6 +65,10 @@
 
     <select id="getPrimaryKey" resultType="int">
         select last_insert_id()
+    </select>
+
+    <select id="getGameDetails" parameterType="int" resultMap="gameDetails">
+        select * from turn where game_id = #{gameId};
     </select>
 
     <update id='updateResult' parameterType='DartsResult'>

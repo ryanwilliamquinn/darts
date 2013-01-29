@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -161,6 +162,56 @@ public class TargetPracticeAction extends PracticeAction {
             PrintWriter out = response.getWriter();
             out.print(json);
             out.flush();
+        }
+        return NONE;
+    }
+
+    public String getGameDetails() throws Exception {
+        slf4jLogger.debug("Load game details");
+
+        // might be nice to put a check in here for the gameid and be sure the current user owns the game -- especially if we let the user edit the rounds
+
+        Subject currentUser = SecurityUtils.getSubject();
+        try {
+            SqlSessionFactory sqlSessionFactory = getSqlSession();
+
+            HttpServletRequest request = ServletActionContext.getRequest();
+            String url = request.getRequestURI();
+            int gameId = -1;
+            try {
+                gameId = Integer.parseInt(StringUtils.substringAfter(url, "/data/gameDetails"));
+            } catch (NumberFormatException e) {
+                slf4jLogger.error("Problem with casting game id to integer: " + gameId);
+            }
+            slf4jLogger.debug("gameid: " + gameId);
+            if (gameId < 0) {
+                slf4jLogger.error("invalid game id: " + gameId);
+                // maybe return a json error message to the front end?
+                return NONE;
+            }
+
+            List<RoundResult> rounds = null;
+
+            SqlSession session = sqlSessionFactory.openSession();
+            try {
+                DartsResultService dartsResultService = new DartsResultService();
+                rounds = dartsResultService.getGameDetails(gameId);
+            } finally {
+                session.close();
+            }
+
+            if (rounds != null && rounds.size() > 0) {
+                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+                String json = gson.toJson(rounds);
+                // slf4jLogger.info("game details json: " + json);
+                HttpServletResponse response = ServletActionContext.getResponse();
+                response.setHeader("Content-type", "application/json");
+                PrintWriter out = response.getWriter();
+                out.print(json);
+                out.flush();
+            }
+        } catch (Exception e) {
+            slf4jLogger.error("errrror: " + e);
         }
         return NONE;
     }
