@@ -43,15 +43,24 @@ function mainController($scope, $http, $log, practiceNameService) {
 
     $scope.changedTarget = function() {
         $scope.setUpUrls();
+        $scope.reset();
         $scope.getData();
     }
 
-    $scope.cancelRound = function() {
+    $scope.reset = function() {
+        $scope.games = [];
+        $scope.allGames = [];
+        $scope.results = [];
+    }
+
+    // cancel a game
+    $scope.cancelGame = function() {
         $scope.results = [];
         $scope.round.number = 1;
         $scope.isShowRounds = false;
     }
 
+    // record a single round/turn
     $scope.recordResult = function(result) {
         if (result && isNumber(result.score)) {
             var newResult = {score : result.score, round : $scope.round.number};
@@ -61,18 +70,18 @@ function mainController($scope, $http, $log, practiceNameService) {
         }
     }
 
+    // method for hiding rounds input once we finish the correct number of turns
     $scope.checkRoundsComplete = function() {
         return $scope.round.number > $scope.numRounds.num;
     }
 
-
+    // save data to database, push it into games
     $scope.postResult = function() {
         if ($scope.results && $scope.results.length > 0) {
             // Create the http post request
             // the data holds the keywords
             // The request is a JSON request.
             var myjson = JSON.stringify($scope.results, replacer);
-
             $http.post($scope.postUrl, myjson).
                 success(function(data, status) {
                     //$scope.status = status;
@@ -81,12 +90,16 @@ function mainController($scope, $http, $log, practiceNameService) {
                     $scope.results = [];
                     $scope.round.number = 1;
                     if (data) {
-                        var newResult = {'date' : data.displayDateTime, 'score' : data.score, 'dateMillis' : data.dateMilliseconds};
+                        // console.log(data);
+                        var newResult = {'date' : data.displayDateTime, 'score' : data.score, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds};
+                        newResult.avg = (newResult.score / newResult.numRounds);
                         $scope.games.push(newResult);
+                        $scope.allGames.push(newResult);
                     }
                     $scope.isShowRounds = false;
                 }).
                 error(function(data, status) {
+                    console.log("post results failed");
                     $scope.data = data || "Request failed";
                     $scope.status = status;
                 });
@@ -94,17 +107,17 @@ function mainController($scope, $http, $log, practiceNameService) {
 
     };
 
+    // called from "show all" button click
     $scope.showAll = function() {
         $scope.games = [];
         if ($scope.allGames.length == 0) {
             $scope.getResults($scope.loadAllUrl, $scope.games);
         } else if ($scope.allGames.length > 0) {
-            $scope.games = $scope.allGames;
+            console.log("are we getting in here somehow?  wtfs?");
+            $scope.games = $scope.allGames.slice();
         }
         $scope.needsShowAll = false;
     }
-
-
 
     $scope.loadAll = function() {
         $scope.getResults($scope.loadAllUrl, $scope.allGames);
@@ -119,11 +132,9 @@ function mainController($scope, $http, $log, practiceNameService) {
     $scope.getResults = function(url, gamesContainer) {
         $http.get(url).
                 success(function(data, status) {
-                    //$log.info(data);
-
+                    // $log.info(data);
                     $scope.numResults = data.totalNumResults;
                     var tempResults = data.dartsResults;
-                    $log.info(tempResults);
                     if (tempResults) {
                         var resultsLength = tempResults.length;
                         //$log.info("results length: " + resultsLength + ", total number of results: " + $scope.numResults);
@@ -135,16 +146,26 @@ function mainController($scope, $http, $log, practiceNameService) {
                             oldRound.date = tempdata.displayDateTime;
                             oldRound.score = tempdata.score;
                             oldRound.dateMillis = tempdata.dateMilliseconds;
+                            oldRound.numRounds = tempdata.numRounds;
+                            oldRound.avg = (oldRound.score / oldRound.numRounds);
                             if (tempdata.score && tempdata.displayDateTime) {
                                 gamesContainer.push(oldRound);
                             }
                         }
-                        if ($scope.initialNumGames >= resultsLength && resultsLength < $scope.numResults) {
+                        // if there are more results than we show, we need the show all button, and we also need to load up the rest of the data for calculating averages
+                        if ($scope.initialNumGames <= resultsLength && resultsLength < $scope.numResults) {
                             $scope.needsShowAll = true;
                             $scope.loadAll();
+                            console.log("here?");
+                        // if there are fewer total results than we ask for, then just copy the data over into the structure for calculating averages.
                         } else if ($scope.initialNumGames >= resultsLength && resultsLength >= $scope.numResults) {
                             $scope.needsShowAll = false;
-                            $scope.allGames = $scope.games
+                            $scope.allGames = $scope.games.slice();
+                            console.log("in here");
+                            console.log($scope.allGames.length);
+                        } else {
+                            // if we get here, do we have to set allGames?
+                            console.log("cant be here right?");
                         }
                     }
                 }).
@@ -189,6 +210,7 @@ function mainController($scope, $http, $log, practiceNameService) {
             return value;
         }
     }
+
 }
 
 //mainController.$inject = [];

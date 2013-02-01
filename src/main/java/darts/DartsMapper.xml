@@ -9,6 +9,7 @@
         <result property='type' column='type'/>
         <result property='score' column='score'/>
         <result property='dateTime' column='date'/>
+        <result property='numRounds' column='numRounds'/>
     </resultMap>
 
     <resultMap type='darts.RoundResult' id='gameDetails'>
@@ -27,7 +28,7 @@
     </select>
 
     <select id='getAllResults' parameterType="map"  resultMap='dartsResultValue'>
-        SELECT id, UPPER(type), score, date FROM darts_result
+        SELECT id, UPPER(type), score, date, numRounds FROM darts_result
         WHERE type = #{type}
         AND user = #{username}
         ORDER BY date DESC;
@@ -35,7 +36,7 @@
     </select>
 
     <select id='getTenResults' parameterType="map"  resultMap='dartsResultValue'>
-        SELECT  id, UPPER(type), score, date  FROM darts_result
+        SELECT  id, UPPER(type), score, date, numRounds  FROM darts_result
         WHERE type = #{type}
         AND user = #{username}
         ORDER BY date DESC
@@ -54,8 +55,8 @@
     </insert>
 
     <insert id='insertGame' parameterType='DartsResult' useGeneratedKeys='true' keyProperty='id'>
-        INSERT INTO darts_result(type, score, date, user)
-        VALUES(#{type.value}, #{score}, #{mySqlDateTime}, #{username})
+        INSERT INTO darts_result(type, score, date, user, numRounds)
+        VALUES(#{type.value}, #{score}, #{mySqlDateTime}, #{username}, #{numRounds})
     </insert>
 
     <insert id='insertRound' parameterType='map' useGeneratedKeys='true' keyProperty='roundResult.id'>

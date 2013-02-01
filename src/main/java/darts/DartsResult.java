@@ -18,6 +18,7 @@ public class DartsResult {
     @Expose private int id;
     private BasePracticeType type;
     @Expose private int score;
+    @Expose private int numRounds;
     private String mySqlDateTime;
     @Expose private String displayDateTime;
     private DateTime dateTime;
@@ -58,6 +59,14 @@ public class DartsResult {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public int getNumRounds() {
+        return numRounds;
+    }
+
+    public void setNumRounds(int numRounds) {
+        this.numRounds = numRounds;
     }
 
     public String toString() {

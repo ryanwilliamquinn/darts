@@ -17,7 +17,20 @@ public enum TargetPracticeType implements BasePracticeType {
     TWENTIES ("20"),
     TRIPLE_NINETEEN ("t19"),
     DOUBLE_NINETEEN ("d19"),
-    NINETEEN ("19");
+    NINETEEN ("19"),
+    TRIPLE_EIGHTEEN ("t18"),
+    DOUBLE_EIGHTEEN ("d18"),
+    EIGHTEEN ("18"),
+    TRIPLE_SEVENTEEN ("t17"),
+    DOUBLE_SEVENTEEN ("d17"),
+    SEVENTEEN ("17"),
+    TRIPLE_SIXTEEN ("t16"),
+    DOUBLE_SIXTEEN ("d16"),
+    SIXTEEN ("16"),
+    TRIPLE_FIFTEEN ("t15"),
+    DOUBLE_FIFTEEN ("d15"),
+    FIFTEEN ("15");
+
 
     private String value;
 

@@ -13,12 +13,14 @@ h3 {margin:0px;}
 #signupform input.ng-invalid.ng-dirty {border:solid 2px red;}
 #signupform input.ng-valid.ng-dirty {border:solid 2px green;}
 .error {color:red; font-size:13px;}
-.blueButton {display:inline-block; height:25px; line-height:25px; background-color:blue; text-decoration:none; color:white; margin:5px 0px;
+.button {display:inline-block; height:25px; line-height:25px; text-decoration:none; color:white; margin:5px 0px;
              text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 5px;
              cursor:pointer;}
-.smallBlueButton {display:inline-block; height:18px; line-height:18px; font-size:13px; background-color:blue; text-decoration:none; color:white; margin:5px 0px;
-                               text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 6px;
-                               cursor:pointer;}
+.smallButton {display:inline-block; height:18px; line-height:18px; font-size:13px; text-decoration:none; color:white; margin:5px 0px;
+                              text-align:center;-webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:solid 2px black; padding:0px 6px;
+                              cursor:pointer;}
+.red {background-color:red;}
+.blue {background-color:blue;}
 .rounds {float:left; margin-bottom:20px;}
 
 

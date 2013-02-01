@@ -22,6 +22,7 @@ public class SimplePracticeResult extends DartsResult {
 
     public SimplePracticeResult(List<RoundResult> rounds, String type) {
         this.rounds = rounds;
+        this.setNumRounds(rounds.size());
         calculateScore();
         PracticeType.getPracticeTypeForString(type);
     }
@@ -30,6 +31,7 @@ public class SimplePracticeResult extends DartsResult {
         setType(type);
         this.rounds = rounds;
         calculateScore();
+        this.setNumRounds(rounds.size());
     }
 
     public List<RoundResult> getRoundResult() {

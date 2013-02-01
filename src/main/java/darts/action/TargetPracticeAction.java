@@ -74,7 +74,7 @@ public class TargetPracticeAction extends PracticeAction {
         if (simplePracticeResult != null) {
             Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
             String json = gson.toJson(simplePracticeResult);
-            //System.out.println(json);
+            System.out.println(json);
             HttpServletResponse response = ServletActionContext.getResponse();
             response.setHeader("Content-type", "application/json");
             PrintWriter out = response.getWriter();
@@ -127,7 +127,7 @@ public class TargetPracticeAction extends PracticeAction {
     }
 
     public String loadAll() throws Exception {
-        slf4jLogger.debug("Load us all the twenties!");
+        slf4jLogger.debug("Load us all the targets!");
 
         Subject currentUser = SecurityUtils.getSubject();
 
