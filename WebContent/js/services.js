@@ -2,9 +2,9 @@
 
 /* Services */
 
-angular.module('dartsApp.services', []).
+var ang = angular.module('dartsApp.services', []);
   //factory('practiceNameService', ['$location', function(loc) {
-  factory('practiceNameService', ['$location', '$log', function($location, $log) {
+ang.factory('practiceNameService', ['$location', '$log', function($location, $log) {
     //$log.info($location);
     var substring = "/practice/";
     var path = $location.absUrl();
@@ -16,6 +16,7 @@ angular.module('dartsApp.services', []).
   return returnValue;
 
 }]);
+
 
 /*
 angular.module('dartsApp.services.watchLocation', []).

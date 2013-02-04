@@ -91,10 +91,10 @@ function mainController($scope, $http, $log, practiceNameService) {
                     $scope.round.number = 1;
                     if (data) {
                         // console.log(data);
-                        var newResult = {'date' : data.displayDateTime, 'score' : data.score, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds};
-                        newResult.avg = (newResult.score / newResult.numRounds);
-                        $scope.games.push(newResult);
-                        $scope.allGames.push(newResult);
+                        var avg = data.score / data.numRounds;
+                        var newResult = {'date' : data.displayDateTime, 'score' : data.score, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds, 'avg' : avg};
+                        $scope.games.unshift(newResult);
+                        $scope.allGames.unshift(newResult);
                     }
                     $scope.isShowRounds = false;
                 }).
@@ -104,7 +104,6 @@ function mainController($scope, $http, $log, practiceNameService) {
                     $scope.status = status;
                 });
         }
-
     };
 
     // called from "show all" button click
@@ -113,7 +112,6 @@ function mainController($scope, $http, $log, practiceNameService) {
         if ($scope.allGames.length == 0) {
             $scope.getResults($scope.loadAllUrl, $scope.games);
         } else if ($scope.allGames.length > 0) {
-            console.log("are we getting in here somehow?  wtfs?");
             $scope.games = $scope.allGames.slice();
         }
         $scope.needsShowAll = false;
@@ -156,16 +154,13 @@ function mainController($scope, $http, $log, practiceNameService) {
                         if ($scope.initialNumGames <= resultsLength && resultsLength < $scope.numResults) {
                             $scope.needsShowAll = true;
                             $scope.loadAll();
-                            console.log("here?");
                         // if there are fewer total results than we ask for, then just copy the data over into the structure for calculating averages.
                         } else if ($scope.initialNumGames >= resultsLength && resultsLength >= $scope.numResults) {
                             $scope.needsShowAll = false;
-                            $scope.allGames = $scope.games.slice();
-                            console.log("in here");
-                            console.log($scope.allGames.length);
+                            $scope.allGames = gamesContainer.slice();
                         } else {
                             // if we get here, do we have to set allGames?
-                            console.log("cant be here right?");
+                            $scope.allGames = gamesContainer.slice();
                         }
                     }
                 }).
@@ -201,15 +196,46 @@ function mainController($scope, $http, $log, practiceNameService) {
 
     }
 
-    //$scope.watcher = watchTheLocation;
+    $scope.$watch(
+        function() {return $scope.allGames.length},
+        function() {
+            if ($scope.allGames.length > 0) {
+                var chart1; // globally available
+                $(document).ready(function() {
+                      var dates = [];
+                      var scores = [];
+                      var length = $scope.allGames.length-1;
+                      console.log($scope.allGames);
+                      for (var i=length; i > -1; i--) {
+                        dates.push($scope.allGames[i].date);
+                        scores.push($scope.allGames[i].avg);
+                      }
+                      chart1 = new Highcharts.Chart({
+                         chart: {
+                            renderTo: 'container',
+                            type: 'line'
+                         },
+                         title: {
+                            text: 'Darts!'
+                         },
+                         xAxis: {
+                            categories: dates
+                         },
+                         yAxis: {
+                            title: {
+                               text: 'Avg'
+                            }
+                         },
+                         series: [{
+                            name: 'Average',
+                            data: scores
+                         }]
+                      });
+                });
+            }
+        });
 
-    var replacer = function(key, value) {
-        if (key=="$$hashKey") {
-            return undefined;
-        } else {
-            return value;
-        }
-    }
+
 
 }
 

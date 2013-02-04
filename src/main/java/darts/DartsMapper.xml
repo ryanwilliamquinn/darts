@@ -59,9 +59,19 @@
         VALUES(#{type.value}, #{score}, #{mySqlDateTime}, #{username}, #{numRounds})
     </insert>
 
+    <insert id='insertCricketGame' parameterType='DartsResult' useGeneratedKeys='true' keyProperty='id'>
+        INSERT INTO darts_result(type, score, date, user, numRounds)
+        VALUES(#{type.value}, #{score}, #{mySqlDateTime}, #{username}, #{numRounds})
+    </insert>
+
     <insert id='insertRound' parameterType='map' useGeneratedKeys='true' keyProperty='roundResult.id'>
         INSERT INTO turn(round, score, game_id)
         VALUES(#{roundResult.round}, #{roundResult.score}, #{foreignKey})
+    </insert>
+
+    <insert id="insertCricketRound" parameterType='map' useGeneratedKeys="true" keyProperty="roundResult.id">
+        INSERT INTO cricket_turn(firstDart, secondDart, thirdDart, round, game_id)
+        VALUES(#{roundResult.firstDart}, #{roundResult.secondDart}, #{roundResult.thirdDart}, #{roundResult.round}, #{foreignKey})
     </insert>
 
     <select id="getPrimaryKey" resultType="int">

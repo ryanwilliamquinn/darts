@@ -53,6 +53,7 @@
         <action name="loadAll*" class="darts.action.TargetPracticeAction" method="loadAll"/>
         <action name="load*" class="darts.action.TargetPracticeAction" method="load"/>
         <action name="gameDetails*" class="darts.action.TargetPracticeAction" method="getGameDetails"/>
+        <action name="cricket" class="darts.action.CricketAction" method="insert"/>
         <action name="*" class="darts.action.TargetPracticeAction" method="insert"/>
 
     </package>

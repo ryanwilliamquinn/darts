@@ -5,40 +5,44 @@
 <div ng-controller="mainController">
     <div style="float:left; margin-bottom:20px;">
         <div>Game mode: ${practiceMode}</div>
-        <div ng-hide="isShowRounds">
-            Target:
-            <select ng-model="target" ng-options="target.label for target in targetTypes" ng-change="changedTarget()"></select>
-            Rounds Per Game:
-            <select ng-model="numRounds" ng-options="numRounds.rounds for numRounds in numRoundsAvailable" ng-change="changedRounds()"></select>
-            <span ng-click="showRounds()" class="smallButton blue" style="margin-left:20px;">Start game</span>
+        <div ng-hide="isShowInputs">
+            <span ng-click="showInputs()" class="smallButton blue">Start a game of cricket</span>
         </div>
-        <div class="rounds" ng-show="isShowRounds">
-            <form name="simplePracticeForm" id="simplePracticeForm"  ng-submit="recordResult(result)" ng-hide="checkRoundsComplete()">
-                <label for="simplePracticeInput">Round {{round.number}} of {{numRounds.id}}:</label><input type="text" id="simplePracticeInput" class="scoreInput" data-ng-model="result.score"/>
+
+        <div class="rounds" ng-show="isShowInputs">
+            <form name="simplePracticeForm" id="simplePracticeForm"  ng-submit="recordResult(result)" ng-hide="gameFinished()">
+                <label for="firstDartInput">First dart:</label><input type="text" id="firstDartInput" class="scoreInput" ng-model="result.firstDart"/>
+                <label for="secondDartInput">Second dart:</label><input type="text" id="secondDartInput" class="scoreInput" ng-model="result.secondDart"/>
+                <label for="thirdDartInput">Third dart:</label><input type="text" id="thirdDartInput" class="scoreInput" ng-model="result.thirdDart"/>
                 <span style="margin-left:5px;" class="blue smallButton" ng-click="recordResult(result)">Next</span>
             </form>
-            <span ng-click="postResult()" style="margin-top:10px;" class="smallButton green" ng-show="checkRoundsComplete()">Save game</span>
+            <span ng-click="postResult()" style="margin-top:10px;" class="smallButton green" ng-show="gameFinished()">Save game</span>
             <div style="margin-top:10px;">
                 <div ng-repeat="result in results">
                     Round: <span>{{result.round}}</span>
-                    <span style="margin-left:20px;" >{{result.score}}</span>
+                    <span style="margin-left:20px;" >{{result.firstDart}}, {{result.secondDart}}, {{result.thirdDart}}</span>
                 </div>
             </div>
 
             <span ng-click="cancelGame()" class="smallButton red" style="margin-top:15px; display:inline-block;">Cancel game</span>
         </div>
-        <div style="float:left; margin:10px 0px 0px 20px;" ng-show="results.length > 0">
-            Round average: {{results|runningAverage}}
+        <div ng-show="isShowInputs">
+            <table>
+                <tr ng-repeat="target in targets | orderBy:predicate">
+                    <td><div style="margin-right:15px;">{{target.label}}</div></td>
+                    <td>{{target.num}}</td>
+                </tr>
+            </table>
         </div>
         <div style="clear:both; float:left; margin-top:30px;">
             <div style="border-bottom:solid 1px #000; margin-bottom:20px; padding-bottom:2px; width:200px;">Past ${practiceMode} totals:</div>
             <div ng-repeat="game in games | orderBy:predicate" ng-click="gameClicked()">
                 <span>{{game.date}}</span>
-                <span style="margin-left:16px;">Average score: {{game.avg}}</span>
+                <span style="margin-left:16px;">Average score: {{game.score}}</span>
             </div>
         </div>
         <div style="margin:30px 0px 0px 20px; float:left;" ng-show="allGames.length > 0">
-            All time average: {{allGames|lifetimeAverage}}
+            All time average: {{allGames|runningAverage}}
         </div>
     </div>
     <a href="/practice" style="display:block; float:right;" class="button blue">Practice home</a>
@@ -58,7 +62,7 @@
 <script src="/js/filters.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/dartsApp.js"></script>
-<script src="/js/targetController.js"></script>
+<script src="/js/cricketController.js"></script>
 <jsp:include page="footer.jsp"/>
 
 

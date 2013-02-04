@@ -53,6 +53,28 @@ public class DartsResultService
         }
     }
 
+    /**
+     * This method does the initial insert of the round with the total score and the game type, into darts result
+     * It returns the primary key, to be used for the foreign key in the insertRounds method.
+     * @param cricketResult
+     * @return
+     */
+    public void insertCricketGame(CricketResult cricketResult) {
+        slf4jLogger.debug(cricketResult.getType() + " " + cricketResult.getScore() + " " + cricketResult.getMySqlDateTime() + " " + cricketResult.getUsername());
+        SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
+        try {
+            DartsMapper dartsMapper = sqlSession.getMapper(DartsMapper.class);
+            dartsMapper.insertCricketGame(cricketResult);
+            int primaryKey = dartsMapper.getPrimaryKey();
+            for (CricketRoundResult result : cricketResult.getRoundResult()) {
+                dartsMapper.insertCricketRound(primaryKey, result);
+            }
+            sqlSession.commit();
+        }finally{
+            sqlSession.close();
+        }
+    }
+
     public DartsResult getResultById(Integer id) {
         SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession();
         try{

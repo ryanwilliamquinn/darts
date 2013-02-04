@@ -13,6 +13,7 @@ public enum PracticeType implements BasePracticeType {
 
     TARGET ("target", true, "target.jsp"),
     MULTI_TARGET ("multi-target", false, "multiTarget.jsp"),
+    CRICKET ("cricket", false, "cricket.jsp"),
     THREE_OH_ONE ("301", false, "threeOhOne.jsp");
 
     private String value;
