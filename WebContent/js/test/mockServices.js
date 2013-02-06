@@ -2,9 +2,9 @@
 
 /* Services */
 
-angular.module('dartsApp.mockService', []).
-  factory('practiceNameService', function() {
-    var returnValue = { practiceUrl : "bulls" };
-  return returnValue;
+var ang = angular.module('dartsApp.mockService', []);
+
+ang.factory('chartService', function() {
+    return "";
 });
 

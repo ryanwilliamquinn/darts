@@ -10,13 +10,15 @@ describe('filter spec', function() {
     beforeEach(module('dartsApp.filters'));
 
     describe('test average filter', function() {
-        it('should calculate average', inject(function(averageFilter) {
-            expect(averageFilter([])).toBe("");
+        it('should calculate average', inject(function(runningAverageFilter) {
+            // test empty
+            expect(runningAverageFilter([])).toBe("");
+            // test simple
+            expect(runningAverageFilter([{'score' : 1}, {'score' : 2}, {'score' : 3}])).toBe("2.0");
+            // test rounding
+            expect(runningAverageFilter([{'score' : 0}, {'score' : 2}, {'score' : 0}])).toBe("0.7");
         }));
     });
 });
-
-
-
 
 

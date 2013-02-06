@@ -3,19 +3,71 @@
 /* Services */
 
 var ang = angular.module('dartsApp.services', []);
-  //factory('practiceNameService', ['$location', function(loc) {
-ang.factory('practiceNameService', ['$location', '$log', function($location, $log) {
-    //$log.info($location);
-    var substring = "/practice/";
-    var path = $location.absUrl();
-    //$log.info("path is: " + path);
-    var value = path.substring(path.indexOf(substring) + substring.length, path.length);
-    //$log.info(value);
-    var returnValue = { practiceUrl : value };
-    //$log.info("location return value: " + returnValue.practiceUrl);
-  return returnValue;
 
+ang.factory('postDataService', ['$http', function($http) {
+    // save data to database, push it into games
+    return function(createNewResult, postData, reset) {
+        if (postData.results && postData.results.length > 0) {
+            var myjson = JSON.stringify(postData.results, replacer);
+            $http.post(postData.postUrl, myjson).
+                success(function(data, status) {
+                    if (data) {
+                        var newResult = createNewResult(data);
+                        postData.games.unshift(newResult);
+                        postData.allGames.unshift(newResult);
+                    }
+                    reset(postData);
+                }).
+                error(function(data, status) {
+                    postData.data = data || "Request failed";
+                    postData.status = status;
+                });
+        }
+    }
 }]);
+
+ang.factory('chartService', [function() {
+    return function(gamesContainer) {
+        if (gamesContainer.length > 0) {
+            var chart1; // globally available
+            $(document).ready(function() {
+                  var dates = [];
+                  var scores = [];
+                  var length = gamesContainer.length-1;
+                  //console.log(gamesContainer);
+                  for (var i=length; i > -1; i--) {
+                    dates.push(gamesContainer[i].date);
+                    scores.push(gamesContainer[i].avg);
+                  }
+                  chart1 = new Highcharts.Chart({
+                     chart: {
+                        renderTo: 'container',
+                        type: 'line'
+                     },
+                     title: {
+                        text: 'Darts!'
+                     },
+                     xAxis: {
+                        title: {
+                            text: 'Time'
+                        },
+                        categories: ""//dates
+                     },
+                     yAxis: {
+                        title: {
+                           text: 'Avg'
+                        }
+                     },
+                     series: [{
+                        name: 'Average',
+                        data: scores
+                     }]
+                  });
+            });
+        }
+    }
+}]);
+
 
 
 /*

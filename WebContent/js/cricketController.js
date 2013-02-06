@@ -3,20 +3,22 @@
 /* Controllers */
 
 angular.module("dartsApp.controller", []);
-function mainController($scope, $http, $log) {
-    $scope.round = {"number" : 1};
+function mainController($scope, $http, $log, chartService, postDataService) {
+    $scope.targetData = {};
+    $scope.targetData.round = {"number" : 1};
     $scope.initialNumGames = 10;
-    $scope.isShowInputs = false;
-    $scope.results = [];
+    $scope.targetData.isShowRounds = false;
+    $scope.targetData.results = [];
     $scope.predicate = 'rank';
-    $scope.postUrl = "/data/cricket";
-    $scope.loadUrl = "/data/loadCricket";
-    $scope.loadAllUrl = "/data/loadAllCricket";
+    $scope.targetData.postUrl = "/data/cricket";
+    $scope.targetData.loadUrl = "/data/loadCricket";
+    $scope.targetData.loadAllUrl = "/data/loadAllCricket";
     $scope.needsShowAll = false;
     $scope.predicate = '-dateMillis';
+    $scope.selectedEditRound = {};
 
-    $scope.games = [];
-    $scope.allGames = [];
+    $scope.targetData.games = [];
+    $scope.targetData.allGames = [];
 
     $scope.acceptedInput = {
             "t20" : ["20","20","20"], "d20" : ["20","20"], "20" : ["20"], "t19" : ["19","19","19"], "d19" : ["19","19"], "19" : ["19"], "t18" : ["18","18","18"], "d18" : ["18","18"], "18" : ["18"],
@@ -36,36 +38,30 @@ function mainController($scope, $http, $log) {
         "20" : 0, "19" : 1, "18" : 2, "17" : 3, "16" : 4, "15" : 5, "b" : 6
     }
 
-
-
-
-
-
-
     $scope.cricket = { "twenty" : 0, "nineteen" : 0, "eighteen" : 0, "seventeen" : 0, "sixteen" : 0, "fifteen" : 0, "bullseye" : 0};
 
     // cancel a game
     $scope.cancelGame = function() {
-        $scope.results = [];
-        $scope.round.number = 1;
-        $scope.isShowInputs = false;
+        $scope.targetData.results = [];
+        $scope.targetData.round.number = 1;
+        $scope.targetData.isShowRounds = false;
     }
 
     $scope.showInputs = function() {
-        $scope.isShowInputs = true;
+        $scope.targetData.isShowRounds = true;
     }
 
-    $scope.gameFinished = function() {
-        return false;
+    $scope.selectEditRound = function(item) {
+        $scope.selectedEditRound = item;
     }
 
     // record a single round/turn
     $scope.recordResult = function(result) {
         if ($scope.validateTurn(result)) {
+            var newResult = {"firstDart" : result.firstDart, "secondDart" : result.secondDart, "thirdDart" : result.thirdDart, "round" : $scope.targetData.round.number};
+            $scope.targetData.results.push(newResult);
             $scope.markTargets(result.firstDart, result.secondDart, result.thirdDart);
-            var newResult = {"firstDart" : result.firstDart, "secondDart" : result.secondDart, "thirdDart" : result.thirdDart, "round" : $scope.round.number};
-            $scope.results.push(newResult);
-            $scope.round.number++;
+            $scope.targetData.round.number++;
             result.firstDart = "";
             result.secondDart = "";
             result.thirdDart = "";
@@ -110,8 +106,23 @@ function mainController($scope, $http, $log) {
         return (undefinedOrEmpty(dart) || $scope.acceptedInput.hasOwnProperty(dart));
     }
 
+    $scope.finishEditing = function(result) {
+        $scope.selectedEditRound = {};
+        $scope.markTargets();
+    }
+
+
+    // reset the target each time, then run through all the rounds and mark the targets
     // arguments are strings that are in the acceptedInput object
-    $scope.markTargets = function(firstDart, secondDart, thirdDart) {
+    $scope.markTargets = function() {
+        $scope.resetTargets();
+        for (var i=0; i<$scope.targetData.results.length;i++) {
+            var result = $scope.targetData.results[i];
+            console.log(result);
+            $scope.tally(result.firstDart, result.secondDart, result.thirdDart);
+        }
+    }
+    $scope.tally = function(firstDart, secondDart, thirdDart) {
         var darts = [firstDart, secondDart, thirdDart];
         for (var i=0; i<darts.length; i++) {
             var dart = darts[i];
@@ -138,34 +149,21 @@ function mainController($scope, $http, $log) {
         return true;
     }
 
+    $scope.createNewResult = function(data) {
+        return {'date' : data.displayDateTime, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds, 'score' : data.score, 'avg' : data.score};
+    }
+
+    $scope.resetAfterPost = function(data) {
+        data.isShowRounds = false;
+        data.results = [];
+        data.round.number = 1;
+        $scope.resetTargets();
+    }
+
+    // save data to database, push it into games
     $scope.postResult = function() {
-        if ($scope.results && $scope.results.length > 0) {
-            // Create the http post request
-            // the data holds the keywords
-            // The request is a JSON request.
-            var myjson = JSON.stringify($scope.results, replacer);
-            $http.post($scope.postUrl, myjson).
-                success(function(data, status) {
-                    //$scope.status = status;
-                    //$scope.data = data;
-                    //$scope.postResult = data; // Show result from server in our <pre></pre> element
-                    $scope.results = [];
-                    $scope.round.number = 1;
-                    if (data) {
-                        var newResult = {'date' : data.displayDateTime, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds, 'score' : data.score, 'avg' : data.score};
-                        $scope.games.unshift(newResult);
-                        $scope.allGames.unshift(newResult);
-                    }
-                    $scope.isShowInputs = false;
-                    $scope.reset();
-                }).
-                error(function(data, status) {
-                    console.log("post results failed");
-                    $scope.data = data || "Request failed";
-                    $scope.status = status;
-                });
-        }
-    };
+        postDataService($scope.createNewResult, $scope.targetData, $scope.resetAfterPost);
+    }
 
 
     // gamesContainer is where we store the games that we parse from the response.  for the first request
@@ -174,7 +172,7 @@ function mainController($scope, $http, $log) {
         $http.get(url).
                 success(function(data, status) {
                     $log.info(data);
-                    $scope.numResults = data.totalNumResults;
+                    var numResults = data.totalNumResults;
                     var tempResults = data.dartsResults;
                     if (tempResults) {
                         var resultsLength = tempResults.length;
@@ -193,17 +191,17 @@ function mainController($scope, $http, $log) {
                             }
                         }
                         // if there are more results than we show, we need the show all button, and we also need to load up the rest of the data for calculating averages
-                        if ($scope.initialNumGames <= resultsLength && resultsLength < $scope.numResults) {
+                        if ($scope.initialNumGames <= resultsLength && resultsLength < numResults) {
                             $scope.needsShowAll = true;
                             $scope.loadAll();
                         // if there are fewer total results than we ask for, then just copy the data over into the structure for calculating averages.
-                        } else if ($scope.initialNumGames >= resultsLength && resultsLength >= $scope.numResults) {
+                        } else if ($scope.initialNumGames >= resultsLength && resultsLength >= numResults) {
                             $scope.needsShowAll = false;
-                            $scope.allGames = gamesContainer.slice();
+                            $scope.targetData.allGames = gamesContainer.slice();
                         // if we get all the results, load the data
                         } else {
                             // if we get here, do we have to set allGames?
-                            $scope.allGames = gamesContainer.slice();
+                            $scope.targetData.allGames = gamesContainer.slice();
                         }
                     }
                 }).
@@ -214,65 +212,40 @@ function mainController($scope, $http, $log) {
 
     // called from "show all" button click
     $scope.showAll = function() {
-        $scope.games = [];
-        if ($scope.allGames.length == 0) {
-            $scope.getResults($scope.loadAllUrl, $scope.games);
-        } else if ($scope.allGames.length > 0) {
-            $scope.games = $scope.allGames.slice();
+        $scope.targetData.games = [];
+        if ($scope.targetData.allGames.length == 0) {
+            $scope.getResults($scope.targetData.loadAllUrl, $scope.targetData.games);
+        } else if ($scope.targetData.allGames.length > 0) {
+            $scope.targetData.games = $scope.targetData.allGames.slice();
         }
         $scope.needsShowAll = false;
     }
 
     $scope.loadAll = function() {
-        $scope.getResults($scope.loadAllUrl, $scope.allGames);
+        $scope.getResults($scope.targetData.loadAllUrl, $scope.targetData.allGames);
     }
 
-    $scope.reset = function() {
-        $scope.results = [];
-        $scope.round.number = 1;
+    $scope.targetData.reset = function() {
+        $scope.isShowRounds = false;
+        $scope.targetData.results = [];
+        $scope.targetData.round.number = 1;
+        $scope.resetTargets();
+
+    }
+
+    $scope.resetTargets = function() {
         for (var i=0; i<$scope.targets.length; i++) {
-            $scope.targets[i].num = 0;
+           $scope.targets[i].num = 0;
         }
     }
 
-    $scope.getResults($scope.loadUrl, $scope.games);
+    $scope.getResults($scope.targetData.loadUrl, $scope.targetData.games);
 
     $scope.$watch(
-    function() {return $scope.allGames.length},
-    function() {
-        if ($scope.allGames.length > 0) {
-            var chart1; // globally available
-            $(document).ready(function() {
-                  var dates = [];
-                  var scores = [];
-                  var length = $scope.allGames.length-1;
-                  for (var i=length; i > -1; i--) {
-                    dates.push($scope.allGames[i].date);
-                    scores.push($scope.allGames[i].avg);
-                  }
-                  chart1 = new Highcharts.Chart({
-                     chart: {
-                        renderTo: 'container',
-                        type: 'line'
-                     },
-                     title: {
-                        text: 'Darts!'
-                     },
-                     xAxis: {
-                        categories: dates
-                     },
-                     yAxis: {
-                        title: {
-                           text: 'Avg'
-                        }
-                     },
-                     series: [{
-                        name: 'Average',
-                        data: scores
-                     }]
-                  });
-            });
+        function() {return $scope.targetData.allGames.length},
+        function() {
+            chartService($scope.targetData.allGames);
         }
-    });
+    );
 }
 

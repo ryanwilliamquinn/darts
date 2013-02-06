@@ -3,16 +3,21 @@
 /* Controllers */
 
 angular.module("dartsApp.controller", []);
-function mainController($scope, $http, $log, practiceNameService) {
-    $scope.round = {"number" : 1};
-    $scope.results = [];
+function mainController($scope, $http, $log, chartService, postDataService) {
+    $scope.targetData = {};
+    $scope.targetData.round = {"number" : 1};
     $scope.numRoundsAvailable = [{id : "5", rounds : "five", num : 5}, {id : "10", rounds : "ten", num : 10}];
-    $scope.numRounds = $scope.numRoundsAvailable[1];
-    $scope.isShowRounds = false;
+    $scope.targetData.numRounds = $scope.numRoundsAvailable[1];
+    $scope.targetData.isShowRounds = false;
     $scope.initialNumGames = 10;
 
-    $scope.games = [];
-    $scope.allGames = [];
+    $scope.targetData.results = [];
+    $scope.targetData.games = [];
+    $scope.targetData.allGames = [];
+    $scope.targetData.postUrl = "";
+    $scope.targetData.loadUrl = "";
+    $scope.targetData.loadAllUrl = "";
+
     $scope.needsShowAll = true;
     $scope.allDataLoaded = false;
     $scope.displayShowAll = "hide";
@@ -27,18 +32,18 @@ function mainController($scope, $http, $log, practiceNameService) {
     $scope.target = $scope.targetTypes[0];
 
     $scope.setUpUrls = function() {
-        $scope.games = [];
-        $scope.practiceType = $scope.target.id;
-        $scope.urlPracticeType = capitaliseFirstLetter($scope.practiceType)
-        $scope.postUrl = "/data/" + $scope.practiceType;
-        $scope.loadUrl = "/data/load" + $scope.urlPracticeType;
-        $scope.loadAllUrl = "/data/loadAll" + $scope.urlPracticeType;
+        $scope.targetData.games = [];
+        $scope.targetData.practiceType = $scope.target.id;
+        $scope.targetData.urlPracticeType = capitaliseFirstLetter($scope.targetData.practiceType)
+        $scope.targetData.postUrl = "/data/" + $scope.targetData.practiceType;
+        $scope.targetData.loadUrl = "/data/load" + $scope.targetData.urlPracticeType;
+        $scope.targetData.loadAllUrl = "/data/loadAll" + $scope.targetData.urlPracticeType;
     }
 
     $scope.setUpUrls();
 
     $scope.showRounds = function() {
-        $scope.isShowRounds = true;
+        $scope.targetData.isShowRounds = true;
     }
 
     $scope.changedTarget = function() {
@@ -48,81 +53,63 @@ function mainController($scope, $http, $log, practiceNameService) {
     }
 
     $scope.reset = function() {
-        $scope.games = [];
-        $scope.allGames = [];
-        $scope.results = [];
+        $scope.targetData.games = [];
+        $scope.targetData.allGames = [];
+        $scope.targetData.results = [];
+    }
+
+    $scope.resetAfterPost = function(data) {
+        data.isShowRounds = false;
+        data.results = [];
+        data.round.number = 1;
     }
 
     // cancel a game
     $scope.cancelGame = function() {
-        $scope.results = [];
-        $scope.round.number = 1;
-        $scope.isShowRounds = false;
+        $scope.targetData.results = [];
+        $scope.targetData.round.number = 1;
+        $scope.targetData.isShowRounds = false;
     }
 
     // record a single round/turn
     $scope.recordResult = function(result) {
         if (result && isNumber(result.score)) {
-            var newResult = {score : result.score, round : $scope.round.number};
-            $scope.results.push(newResult);
-            $scope.round.number++;
+            var newResult = {score : result.score, round : $scope.targetData.round.number, isEditRound : false};
+            $scope.targetData.results.push(newResult);
+            $scope.targetData.round.number++;
             result.score = "";
+            //var editRoundText = "isEditRound" + $scope.targetData.round.number;
         }
     }
 
     // method for hiding rounds input once we finish the correct number of turns
     $scope.checkRoundsComplete = function() {
-        return $scope.round.number > $scope.numRounds.num;
+        return $scope.targetData.round.number > $scope.targetData.numRounds.num;
+    }
+
+    $scope.createNewResult = function(data) {
+        var avg = data.score / data.numRounds;
+        return {'date' : data.displayDateTime, 'score' : data.score, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds, 'avg' : avg}
     }
 
     // save data to database, push it into games
     $scope.postResult = function() {
-        if ($scope.results && $scope.results.length > 0) {
-            // Create the http post request
-            // the data holds the keywords
-            // The request is a JSON request.
-            var myjson = JSON.stringify($scope.results, replacer);
-            $http.post($scope.postUrl, myjson).
-                success(function(data, status) {
-                    //$scope.status = status;
-                    //$scope.data = data;
-                    //$scope.postResult = data; // Show result from server in our <pre></pre> element
-                    $scope.results = [];
-                    $scope.round.number = 1;
-                    if (data) {
-                        // console.log(data);
-                        var avg = data.score / data.numRounds;
-                        var newResult = {'date' : data.displayDateTime, 'score' : data.score, 'dateMillis' : data.dateMilliseconds, 'numRounds' : data.numRounds, 'avg' : avg};
-                        $scope.games.unshift(newResult);
-                        $scope.allGames.unshift(newResult);
-                    }
-                    $scope.isShowRounds = false;
-                }).
-                error(function(data, status) {
-                    console.log("post results failed");
-                    $scope.data = data || "Request failed";
-                    $scope.status = status;
-                });
-        }
-    };
+        postDataService($scope.createNewResult, $scope.targetData, $scope.resetAfterPost);
+    }
 
     // called from "show all" button click
     $scope.showAll = function() {
-        $scope.games = [];
-        if ($scope.allGames.length == 0) {
-            $scope.getResults($scope.loadAllUrl, $scope.games);
-        } else if ($scope.allGames.length > 0) {
-            $scope.games = $scope.allGames.slice();
+        $scope.targetData.games = [];
+        if ($scope.targetData.allGames.length == 0) {
+            $scope.getResults($scope.targetData.loadAllUrl, $scope.targetData.games);
+        } else if ($scope.targetData.allGames.length > 0) {
+            $scope.targetData.games = $scope.targetData.allGames.slice();
         }
         $scope.needsShowAll = false;
     }
 
     $scope.loadAll = function() {
-        $scope.getResults($scope.loadAllUrl, $scope.allGames);
-        if ($scope.allGames.length > 0) {
-            // flip the switch to show historical averages and stuff
-            $scope.allDataLoaded = true;
-        }
+        $scope.getResults($scope.targetData.loadAllUrl, $scope.targetData.allGames);
     }
 
     // gamesContainer is where we store the games that we parse from the response.  for the first request
@@ -131,11 +118,11 @@ function mainController($scope, $http, $log, practiceNameService) {
         $http.get(url).
                 success(function(data, status) {
                     // $log.info(data);
-                    $scope.numResults = data.totalNumResults;
+                    var numResults = data.totalNumResults;
                     var tempResults = data.dartsResults;
                     if (tempResults) {
                         var resultsLength = tempResults.length;
-                        //$log.info("results length: " + resultsLength + ", total number of results: " + $scope.numResults);
+                        //$log.info("results length: " + resultsLength + ", total number of results: " + numResults);
 
                         for (var i=0; i < resultsLength; i++) {
                             var tempdata = tempResults[i];
@@ -151,16 +138,16 @@ function mainController($scope, $http, $log, practiceNameService) {
                             }
                         }
                         // if there are more results than we show, we need the show all button, and we also need to load up the rest of the data for calculating averages
-                        if ($scope.initialNumGames <= resultsLength && resultsLength < $scope.numResults) {
+                        if ($scope.initialNumGames <= resultsLength && resultsLength < numResults) {
                             $scope.needsShowAll = true;
                             $scope.loadAll();
                         // if there are fewer total results than we ask for, then just copy the data over into the structure for calculating averages.
-                        } else if ($scope.initialNumGames >= resultsLength && resultsLength >= $scope.numResults) {
+                        } else if ($scope.initialNumGames >= resultsLength && resultsLength >= numResults) {
                             $scope.needsShowAll = false;
-                            $scope.allGames = gamesContainer.slice();
+                            $scope.targetData.allGames = gamesContainer.slice();
                         } else {
                             // if we get here, do we have to set allGames?
-                            $scope.allGames = gamesContainer.slice();
+                            $scope.targetData.allGames = gamesContainer.slice();
                         }
                     }
                 }).
@@ -171,15 +158,10 @@ function mainController($scope, $http, $log, practiceNameService) {
 
     $scope.getData = function() {
         // first, load the last 10 results, show this right away
-        $scope.getResults($scope.loadUrl, $scope.games);
+        $scope.getResults($scope.targetData.loadUrl, $scope.targetData.games);
     }
 
     $scope.getData();
-
-    $scope.$watch(
-        function() {return $scope.allGames},
-        function() {$log.info("all games loaded")}
-    );
 
     $scope.gameClicked = function() {
         var url = "/data/gameDetails" + this.game.id;
@@ -197,43 +179,11 @@ function mainController($scope, $http, $log, practiceNameService) {
     }
 
     $scope.$watch(
-        function() {return $scope.allGames.length},
+        function() {return $scope.targetData.allGames.length},
         function() {
-            if ($scope.allGames.length > 0) {
-                var chart1; // globally available
-                $(document).ready(function() {
-                      var dates = [];
-                      var scores = [];
-                      var length = $scope.allGames.length-1;
-                      console.log($scope.allGames);
-                      for (var i=length; i > -1; i--) {
-                        dates.push($scope.allGames[i].date);
-                        scores.push($scope.allGames[i].avg);
-                      }
-                      chart1 = new Highcharts.Chart({
-                         chart: {
-                            renderTo: 'container',
-                            type: 'line'
-                         },
-                         title: {
-                            text: 'Darts!'
-                         },
-                         xAxis: {
-                            categories: dates
-                         },
-                         yAxis: {
-                            title: {
-                               text: 'Avg'
-                            }
-                         },
-                         series: [{
-                            name: 'Average',
-                            data: scores
-                         }]
-                      });
-                });
-            }
-        });
+            chartService($scope.targetData.allGames);
+        }
+    );
 
 
 
